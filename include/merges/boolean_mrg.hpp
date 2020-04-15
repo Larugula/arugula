@@ -17,7 +17,7 @@ typedef struct OrStruct {
 typedef struct AndStruct {
   template <typename T, typename F, template <typename, typename> class L>
   auto operator()(const L<T, F> &left, const L<T, F> &right) const {
-    return left.reveal() && right.reveal();
+    return left.reveal()? right : left;
   }
   friend std::ostream &operator<<(std::ostream &os, const struct AndStruct m) {
     os << "And";
