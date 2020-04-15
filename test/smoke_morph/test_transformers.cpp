@@ -59,6 +59,24 @@ TEST_CASE("when true/false") {
    REQUIRE(when_false(AndTrue, -1, return_sum, 1, 2, 3) == -1);
 }
 
+TEST_CASE("when true/false func") {
+    Lattice thresholdOr(false, Or{});
+    Lattice thresholdAnd(true, And{});
+    auto latticeOr_func = when_true_func(&thresholdOr, -999, return_sum);
+    auto latticeAnd_func = when_false_func(&thresholdAnd, -999, return_sum);
+    REQUIRE(latticeOr_func(1,2,3) == -999);
+    REQUIRE(latticeAnd_func(1,2,3) == -999);
+    thresholdOr+=true;
+    thresholdAnd+=false;
+    thresholdOr.merge(Lattice<bool, Or>(true, Or{}));
+    thresholdAnd.merge(Lattice<bool, And>(false, And{}));
+    //make sure the function does not return a dangling reference
+    int x = latticeOr_func(1,2,3);
+    int y = latticeAnd_func(1,2,3);
+    REQUIRE(x == 6);
+    REQUIRE(y == 6);
+}
+
 TEST_CASE("set project") {
    Lattice lset(std::set<int>{2, 1, 3}, Union{});
    std::set<int> result = project(lset, return_sum, 2, 3).reveal();

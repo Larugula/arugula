@@ -1,6 +1,6 @@
-//
-// Created by alclol on 4/12/20.
-//
+#ifndef ARUGULA_TRANSFORMER_H
+#define ARUGULA_TRANSFORMER_H
+
 #include "utils/is_container.hpp"
 #include "lattice_core.hpp"
 #include "merges/boolean_mrg.hpp"
@@ -9,9 +9,6 @@
 #include "merges/setop_mrg.hpp"
 #include "merges/vector_clock_mrg.hpp"
 #include "merges/causal_mrg.hpp"
-
-#ifndef MANGO_GREATER_THAN_H
-#define MANGO_GREATER_THAN_H
 
 // using reference_wrapper to avoid copies as much as possible
 template <class T, class Func>
@@ -92,15 +89,32 @@ intersect( const std::reference_wrapper<Lattice<T, Func>> s1,
 
 template<class rType, class ... aTypes>
 rType
-when_true(const Lattice<bool, Or> threshold, rType flag, rType (&blk) (aTypes ...), aTypes ... args)  {
+when_true(const Lattice<bool, Or>& threshold, rType flag, rType (&blk) (aTypes ...), aTypes ... args)  {
    return threshold.reveal()? blk(args...) : flag;
+}
+
+template<class rType, class ... aTypes>
+auto
+when_true_func(const Lattice<bool, Or> *threshold, rType flag, rType (&blk) (aTypes ...))  {
+    return [=] (aTypes ... args) -> rType{
+        return threshold->reveal() ? blk(args ...) : flag;
+    };
 }
 
 template<class rType, class ... aTypes>
 rType
 when_false(const Lattice<bool, And> threshold, rType flag, rType(&blk) (aTypes ...), aTypes ... args) {
-   return (threshold.reveal()? blk(args...) : flag);
+   return threshold.reveal()? flag : blk(args...);
 }
+
+template<class rType, class ... aTypes>
+auto
+when_false_func(const Lattice<bool, And> *threshold, rType flag, rType (&blk) (aTypes ...))  {
+    return [=] (aTypes ... args) -> rType{
+        return threshold->reveal() ?  flag : blk(args ...);
+    };
+}
+
 
 // set project
 template<class V, class Func, class ... aTypes>
@@ -165,4 +179,4 @@ get_value(const Lattice<std::tuple<VectorClock, Lattice<T, Func>>, CausalMerge> 
     return std::get<1>(tuple_ref);
 }
 
-#endif //MANGO_GREATER_THAN_H
+#endif //ARUGULA_TRANSFORMER_H
