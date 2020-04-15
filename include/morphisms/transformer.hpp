@@ -103,7 +103,7 @@ when_true_func(const Lattice<bool, Or> *threshold, rType flag, rType (&blk) (aTy
 
 template<class rType, class ... aTypes>
 rType
-when_false(const Lattice<bool, And> threshold, rType flag, rType(&blk) (aTypes ...), aTypes ... args) {
+when_false(const Lattice<bool, And>& threshold, rType flag, rType(&blk) (aTypes ...), aTypes ... args) {
    return threshold.reveal()? flag : blk(args...);
 }
 
@@ -120,7 +120,7 @@ when_false_func(const Lattice<bool, And> *threshold, rType flag, rType (&blk) (a
 template<class V, class Func, class ... aTypes>
 typename std::enable_if_t<std::is_same<Func, Union>::value || std::is_same<Func, Intersect>::value,
                           Lattice<std::set<V>, Func>>
-project(const Lattice<std::set<V>, Func> lset, V(&blk) (V, aTypes ...), aTypes ... args) {
+project(const Lattice<std::set<V>, Func>& lset, V(&blk) (V, aTypes ...), aTypes ... args) {
     auto original = lset.reveal_ref().get();
     std::set<V> result;
     for (auto element : original) {
@@ -132,9 +132,9 @@ project(const Lattice<std::set<V>, Func> lset, V(&blk) (V, aTypes ...), aTypes .
 // map project
 template<class K, class V, class ... aTypes>
 Lattice<std::map<K, V>, MapUnion>
-project(const std::reference_wrapper<Lattice<std::map<K, V>, MapUnion>> lmap,
+project(const Lattice<std::map<K, V>, MapUnion>& lmap,
         V(&blk) (V, aTypes ...), aTypes ... args) {
-    auto copy = lmap.get().reveal();
+    auto copy = lmap.reveal();
     for (auto const& [key, value] : copy) {
        copy.at(key) = blk(value, args...);
     }
@@ -143,7 +143,7 @@ project(const std::reference_wrapper<Lattice<std::map<K, V>, MapUnion>> lmap,
 
 template<class K, class V>
 Lattice<std::set<K>, Union>
-key_set(const Lattice<std::map<K, V>, MapUnion> lmap) {
+key_set(const Lattice<std::map<K, V>, MapUnion>& lmap) {
     std::set<K> result;
     auto map_ref = lmap.reveal_ref().get();
     for (auto const& [key, _] : map_ref) {
@@ -154,13 +154,13 @@ key_set(const Lattice<std::map<K, V>, MapUnion> lmap) {
 
 template <class T, class Func>
 std::enable_if_t<is_stl_container<T>::value, Lattice<bool, Or>>
-contains(const std::reference_wrapper<Lattice<T, Func>> target, typename T::value_type val) {
+contains(const std::reference_wrapper<Lattice<T, Func>>& target, typename T::value_type val) {
    return Lattice(target.get().reveal_ref().get().count(val) > 0, Or{});
 }
 
 template <class T, class Func>
 std::enable_if_t<is_stl_container<T>::value, Lattice<int, Max>>
-size(const std::reference_wrapper<Lattice<T, Func>> target) {
+size(const std::reference_wrapper<Lattice<T, Func>>& target) {
    return Lattice(static_cast<int>(target.get().reveal().size()), Max{});
 }
 
@@ -174,7 +174,7 @@ At(const Lattice<std::map<K, vT>, Func>& target, K key) {
 //for idom lattice only
 template<class T, class Func>
 Lattice<T, Func>
-get_value(const Lattice<std::tuple<VectorClock, Lattice<T, Func>>, CausalMerge> idom) {
+get_value(const Lattice<std::tuple<VectorClock, Lattice<T, Func>>, CausalMerge>& idom) {
     auto tuple_ref = idom.reveal_ref().get();
     return std::get<1>(tuple_ref);
 }

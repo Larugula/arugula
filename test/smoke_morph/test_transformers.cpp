@@ -89,7 +89,7 @@ TEST_CASE("map project") {
     std::map<std::string, int> original(test_map);
     Lattice lmap(test_map, MapUnion{});
     std::map<std::string, int> expected = { {"xx", 7}, {"yy", 8} };
-    std::map<std::string, int> result = project(std::ref(lmap), return_sum, 2, 3).reveal();
+    std::map<std::string, int> result = project(lmap, return_sum, 2, 3).reveal();
     REQUIRE(result == expected);
     REQUIRE(lmap.reveal() == original);
 }
