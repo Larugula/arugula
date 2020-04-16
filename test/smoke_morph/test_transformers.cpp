@@ -143,8 +143,10 @@ TEST_CASE("composite test 1") {
     const int target = 10;
     CompareTransformer comp(std::cref(target), std::cref(count));
     Lattice threshold(false, Or{});
+    int element = 0;
     while(!when_true(threshold)) {
-        lset += std::set<int>{1};
+        lset += std::set<int>{element};
+        element++;
         count += size(std::ref(lset));
         threshold += comp.greater_than_or_eq();
     }
