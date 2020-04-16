@@ -87,6 +87,11 @@ intersect( const std::reference_wrapper<Lattice<T, Func>> s1,
    return Lattice(res, Func{});
 }
 
+bool
+when_true(const Lattice<bool, Or>& threshold) {
+    return threshold.reveal();
+}
+
 template<class rType, class ... aTypes>
 rType
 when_true(const Lattice<bool, Or>& threshold, rType flag, rType (&blk) (aTypes ...), aTypes ... args)  {
@@ -99,6 +104,11 @@ when_true_func(const Lattice<bool, Or> *threshold, rType flag, rType (&blk) (aTy
     return [=] (aTypes ... args) -> rType{
         return threshold->reveal() ? blk(args ...) : flag;
     };
+}
+
+bool
+when_false(const Lattice<bool, Or>& threshold) {
+    return !threshold.reveal();
 }
 
 template<class rType, class ... aTypes>
@@ -154,13 +164,13 @@ key_set(const Lattice<std::map<K, V>, MapUnion>& lmap) {
 
 template <class T, class Func>
 std::enable_if_t<is_stl_container<T>::value, Lattice<bool, Or>>
-contains(const std::reference_wrapper<Lattice<T, Func>>& target, typename T::value_type val) {
+contains(const std::reference_wrapper<Lattice<T, Func>> target, typename T::value_type val) {
    return Lattice(target.get().reveal_ref().get().count(val) > 0, Or{});
 }
 
 template <class T, class Func>
 std::enable_if_t<is_stl_container<T>::value, Lattice<int, Max>>
-size(const std::reference_wrapper<Lattice<T, Func>>& target) {
+size(const std::reference_wrapper<Lattice<T, Func>> target) {
    return Lattice(static_cast<int>(target.get().reveal().size()), Max{});
 }
 

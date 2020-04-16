@@ -1,6 +1,7 @@
 //
 // Created by alclol on 4/11/20.
 //
+#include <iostream>
 #include "../catch.hpp"
 #include "lattice_core.hpp"
 #include "merges/setop_mrg.hpp"
@@ -134,4 +135,18 @@ TEST_CASE("get_value") {
     //the return of get_value should make a copy
     result = 100;
     REQUIRE(std::get<1>(l1.reveal()).reveal() == 10);
+}
+
+TEST_CASE("composite test 1") {
+    Lattice lset(std::set<int>{}, Union{});
+    Lattice count(static_cast<int>(0), Max{});
+    const int target = 10;
+    CompareTransformer comp(std::cref(target), std::cref(count));
+    Lattice threshold(false, Or{});
+    while(!when_true(threshold)) {
+        lset += std::set<int>{1};
+        count += size(std::ref(lset));
+        threshold += comp.greater_than_or_eq();
+    }
+    REQUIRE(lset.reveal().size() == 10);
 }
