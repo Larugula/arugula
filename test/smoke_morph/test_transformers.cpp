@@ -1,6 +1,7 @@
 //
 // Created by alclol on 4/11/20.
 //
+#include <iostream>
 #include "../catch.hpp"
 #include "lattice_core.hpp"
 #include "merges/setop_mrg.hpp"
@@ -59,6 +60,24 @@ TEST_CASE("when true/false") {
    REQUIRE(when_false(AndTrue, -1, return_sum, 1, 2, 3) == -1);
 }
 
+TEST_CASE("when true/false func") {
+    Lattice thresholdOr(false, Or{});
+    Lattice thresholdAnd(true, And{});
+    auto latticeOr_func = when_true_func(&thresholdOr, -999, return_sum);
+    auto latticeAnd_func = when_false_func(&thresholdAnd, -999, return_sum);
+    REQUIRE(latticeOr_func(1,2,3) == -999);
+    REQUIRE(latticeAnd_func(1,2,3) == -999);
+    thresholdOr+=true;
+    thresholdAnd+=false;
+    thresholdOr.merge(Lattice<bool, Or>(true, Or{}));
+    thresholdAnd.merge(Lattice<bool, And>(false, And{}));
+    //make sure the function does not return a dangling reference
+    int x = latticeOr_func(1,2,3);
+    int y = latticeAnd_func(1,2,3);
+    REQUIRE(x == 6);
+    REQUIRE(y == 6);
+}
+
 TEST_CASE("set project") {
    Lattice lset(std::set<int>{2, 1, 3}, Union{});
    std::set<int> result = project(lset, return_sum, 2, 3).reveal();
@@ -71,7 +90,7 @@ TEST_CASE("map project") {
     std::map<std::string, int> original(test_map);
     Lattice lmap(test_map, MapUnion{});
     std::map<std::string, int> expected = { {"xx", 7}, {"yy", 8} };
-    std::map<std::string, int> result = project(std::ref(lmap), return_sum, 2, 3).reveal();
+    std::map<std::string, int> result = project(lmap, return_sum, 2, 3).reveal();
     REQUIRE(result == expected);
     REQUIRE(lmap.reveal() == original);
 }
@@ -116,4 +135,20 @@ TEST_CASE("get_value") {
     //the return of get_value should make a copy
     result = 100;
     REQUIRE(std::get<1>(l1.reveal()).reveal() == 10);
+}
+
+TEST_CASE("composite test 1") {
+    Lattice lset(std::set<int>{}, Union{});
+    Lattice count(static_cast<int>(0), Max{});
+    const int target = 10;
+    CompareTransformer comp(std::cref(target), std::cref(count));
+    Lattice threshold(false, Or{});
+    int element = 0;
+    while(!when_true(threshold)) {
+        lset += std::set<int>{element};
+        element++;
+        count += size(std::ref(lset));
+        threshold += comp.greater_than_or_eq();
+    }
+    REQUIRE(lset.reveal().size() == 10);
 }
