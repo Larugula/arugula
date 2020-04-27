@@ -119,9 +119,9 @@ when_false(const Lattice<bool, And>& threshold, rType flag, rType(&blk) (aTypes 
 
 template<class rType, class ... aTypes>
 auto
-when_false_func(const Lattice<bool, And> &threshold, rType flag, rType (&blk) (aTypes ...))  {
-    return [&] (aTypes ... args) {
-        return threshold.reveal() ?  flag : blk(args ...);
+when_false_func(const Lattice<bool, And> *threshold, rType flag, rType (&blk) (aTypes ...))  {
+    return [=] (aTypes ... args) -> rType{
+        return threshold->reveal() ?  flag : blk(args ...);
     };
 }
 
