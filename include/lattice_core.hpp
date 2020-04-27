@@ -11,6 +11,7 @@
 #include "binexpr.hpp"
 #include "utils/is_container.hpp"
 #include "utils/ptr_compare.hpp"
+#include "utils/has_delta.hpp"
 
 template<class T, class Func>
 struct Lattice
@@ -94,12 +95,12 @@ public:
   }
   bool operator!=(const Lattice<T, Func>& rhs) const { return !(operator==(rhs)); }
 
-  //idom : for kvs use only
-//  template <class tuple_first, class tuple_second, class Q = T, class QFunc = Func>
-//  typename std::enable_if_t<std::is_same<Q, std::tuple<tuple_first, tuple_second>>::value&& std::is_same<QFunc, CausalMerge>::value, tuple_second>
-//  get_value() {
-//      return std::get<1>(this->reveal());
-//  }
+  template<class Q = T>
+  typename std::enable_if_t<has_delta<Q>::value, typename Q::delta_type>
+  get_delta() {
+      return val.get_delta();
+  }
+  
 };
 
 #endif // #ifndef LATTICE_CORE_H
