@@ -8,9 +8,9 @@ struct has_delta : std::false_type {};
 
 template<typename T>
 struct has_delta<T, std::void_t<typename T::delta_type,
-								decltype(std::declval<T>.get_delta()),
-								std::enable_if_t<std::is_same<decltype(std::declval<T>.get_delta()), 
-															  typename T::deltatype>::value>>>
+								decltype(std::declval<T>().get_delta()),
+								std::enable_if_t<std::is_same<decltype(std::declval<T>().get_delta()), 
+															  typename T::delta_type>::value>>>
 	: std::true_type {};
 
 #endif // HAS_DELTA_H
