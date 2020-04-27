@@ -21,7 +21,7 @@ public:
     void merge(DeltaSet<_KeyType>& __src) {
        // make a copy of all the keys here, need a way to avoid this
        for (const auto& key : __src._base) {
-           insert(key)
+           insert(key);
        }
     }
 
@@ -34,14 +34,14 @@ public:
     delta_type get_delta() {
         DeltaSet<_KeyType> delta(std::move(_delta));
         rebase();
-        return dalta;
+        return delta;
     }
 
-    int size() {
-        return _base.size();
+    int size() const {
+        return _base.size() + _delta.size();
     }
 
-    int count(const _KeyType& key) {
+    int count(const _KeyType& key) const {
         return _base.count(key) + _delta.count(key);
     }
 
