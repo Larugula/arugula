@@ -1,6 +1,5 @@
-//
-// Created by alclol on 4/19/20.
-//
+#ifndef DELTASET_H
+#define DELTASET_H
 
 #include <set>
 #include <utility>
@@ -68,3 +67,6 @@ private:
     std::set<_KeyType> _base;
     std::set<_KeyType> _delta;
 };
+
+#endif // DELTASET_H
+
