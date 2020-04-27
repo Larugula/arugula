@@ -11,10 +11,10 @@ template<class _KeyType>
 class DeltaSet {
 public:
 
-    DeltaSet() : _base(std::set<_KeyType>{}), _delta(std::set<_KeyType>{}), _end(_delta.end()) {};
+    DeltaSet() : _base(std::set<_KeyType>{}), _delta(std::set<_KeyType>{}) {};
 
     // move constructor
-    DeltaSet(const std::set<_KeyType>&& base) : _base(std::move(base)), _delta(std::set<_KeyType>{}), _end(_delta.end()) {};
+    DeltaSet(const std::set<_KeyType>&& base) : _base(std::move(base)), _delta(std::set<_KeyType>{}) {};
 
     // return type of get_delta
     using delta_type = DeltaSet<_KeyType>;
@@ -50,13 +50,12 @@ public:
     }
 
     DeltaIterator<std::set<_KeyType>> begin() {
-        _end = _delta.end();
-        DeltaIterator<std::set<_KeyType>> result(_base.begin(), _base.end(), _delta.begin(), _end);
+        DeltaIterator<std::set<_KeyType>> result(_base.begin(), _base.end(), _delta.begin(), _delta.end());
         return result;
     }
 
     DeltaIterator<std::set<_KeyType>> end() {
-        DeltaIterator<std::set<_KeyType>> result(_end);
+        DeltaIterator<std::set<_KeyType>> result(_delta.end());
         return result;
     }
 
@@ -68,5 +67,4 @@ public:
 private:
     std::set<_KeyType> _base;
     std::set<_KeyType> _delta;
-    typename std::set<_KeyType>::iterator _end;
 };

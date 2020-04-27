@@ -25,9 +25,18 @@ TEST_CASE("basics int set") {
 
 TEST_CASE("iterator test") {
 	std::set<int> l({ 1, 20, 30 });
+	std::set<int> r({ 1, 2, 3 });
+
 	DeltaSet<int> lefts(std::move(l));
+	DeltaSet<int> rights(std::move(r));
+
+	lefts.merge(rights);
+
+	std::set<int> result;
 	
-	for (auto b = lefts.begin(), e = lefts.end(); b != e; ++b) {
-		;
+	for (auto& e : lefts) {
+		result.insert(e);
 	}
+
+	REQUIRE(result == std::set<int> {1, 2, 3, 20, 30});
 }

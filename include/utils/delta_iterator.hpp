@@ -14,45 +14,63 @@ public:
 	using pointer = const value_type*;
 	using reference = const value_type&;
 
+	// the iterator type the specified container
 	using iter_type = typename T::iterator;
 
 	DeltaIterator(iter_type base_begin, iter_type base_end,
 				  iter_type delta_begin, iter_type delta_end) :
 			      _base_begin(base_begin), _base_end(base_end), 
 				  _delta_begin(delta_begin), _delta_end(delta_end) {
-		_cur = base_begin;
+		base_done = (_base_begin == _base_end);
 	};
 
 	// construct a special end iterator
 	DeltaIterator(iter_type end) :
 				  _base_begin(end), _base_end(end),
 				  _delta_begin(end), _delta_end(end) {
-		_cur = end;
+		base_done = true;
 	};
 
 	//incrementing operation
 	DeltaIterator& operator++ () {
-		if (_cur != _delta_end) {
-			if (_cur == _base_end) {
-				_cur = _delta_begin;
+		if (!base_done) {
+			if (++_base_begin == _base_end) {
+				base_done = true;
 			}
-			else {
-				++_cur;
-			}
-			return *this;
 		}
+		else {
+			if (_delta_begin != _delta_end) {
+				++_delta_begin;
+			}
+		}
+		return *this;
 	}
 
-	reference operator *() {
-		return *_cur;
+	reference operator *() const{
+		if (base_done) {
+			return *_delta_begin;
+		}
+		return *_base_begin;
 	}
 
 	bool operator== (const DeltaIterator& rhs) const {
-		return (*_cur) == (*rhs._cur);
+		if (base_done && _delta_begin == _delta_end) {
+			return rhs.base_done && (rhs._delta_begin == rhs._delta_end);
+		}
+		else if (rhs.base_done && (rhs._delta_begin == rhs._delta_end)) {
+			return false;
+		}
+		return *(*this) == *rhs;
 	}
 
 	bool operator!= (const DeltaIterator& rhs) const {
-		return (*_cur) != (*rhs._cur);
+		if (base_done && _delta_begin == _delta_end) {
+			return !rhs.base_done || (rhs._delta_begin != rhs._delta_end);
+		}
+		else if (rhs.base_done && (rhs._delta_begin == rhs._delta_end)) {
+			return true;
+		}
+		return *(*this) != *rhs;
 	}
 
 private:
@@ -60,8 +78,7 @@ private:
 	iter_type _base_end;
 	iter_type _delta_begin;
 	iter_type _delta_end;
-	iter_type _cur;
-
+	bool base_done;
 };
 
 #endif // DELTA_ITERATOR_H
