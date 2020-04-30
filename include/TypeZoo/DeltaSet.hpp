@@ -31,10 +31,11 @@ public:
        }
     }
 
-    void insert(const _KeyType& key) {
+    std::pair<iterator, bool> insert(const value_type& key) {
         if (!_base.count(key)) {
-            _delta.insert(key);
+            return _delta.insert(key);
        }
+        return _base.insert(key);
     }
 
     delta_type get_delta() {
@@ -59,6 +60,13 @@ public:
     iterator end() {
         iterator result(_delta.end());
         return result;
+    }
+
+    //current definition require both base and delta to be exactly
+    //the same. Maybe we should relax this is to only require the
+    //union of _base and _delta to be the same?
+    bool operator==(const DeltaSet<_KeyType>& right) const {
+        return (_base == right._base) && (_delta == right._delta);
     }
 
     void rebase() {
