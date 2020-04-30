@@ -6,22 +6,22 @@
 #include "lattice_core.hpp"
 #include "merges/map_mrg.hpp"
 
-template <typename k_type, typename set_v_type, class Func>
+template <typename k_type, class T, class Func>
 class DeltaSetMap {
 public:
 
 	//type alias
-	using iterator = typename std::map<k_type, Lattice<DeltaSet<set_v_type>, Func>>::iterator;
+	using iterator = typename std::map<k_type, Lattice<T, Func>>::iterator;
 	using key_type = k_type;
-	using mapped_type = Lattice<DeltaSet<set_v_type>, Func>;
-	using value_type = std::pair<k_type, Lattice<DeltaSet<set_v_type>, Func>>;
+	using mapped_type = Lattice<T, Func>;
+	using value_type = std::pair<k_type, Lattice<T, Func>>;
 	using size_type = std::size_t;
-	using delta_type = Lattice<DeltaSetMap<k_type, set_v_type, Func>, MapUnion>;
+	using delta_type = Lattice<DeltaSetMap<k_type, T, Func>, MapUnion>;
 
-	DeltaSetMap() : _base(std::map<k_type, Lattice<DeltaSet<set_v_type>, Func>>{}) {};
+	DeltaSetMap() : _base(std::map<k_type, Lattice<T, Func>>{}) {};
 
 	//copy constructor
-	DeltaSetMap(const std::map<k_type, Lattice<DeltaSet<set_v_type>, Func>>& base) : _base(base) {};
+	DeltaSetMap(const std::map<k_type, Lattice<T, Func>>& base) : _base(base) {};
 
 	
 	iterator begin() {
@@ -65,12 +65,14 @@ public:
 		return _base.emplace(args...);
 	}
 
-	bool operator==(const DeltaSetMap<k_type, set_v_type, Func>& right) const {
+	bool operator==(const DeltaSetMap<k_type, T, Func>& right) const {
 		return _base == right._base;
 	}
 
-	delta_type get_delta() {
-		DeltaSetMap<k_type, set_v_type, Func> delta;
+	template <class Q=T>
+	typename std::enable_if_t<has_delta<Q>::value, delta_type>
+	get_delta() {
+		DeltaSetMap<k_type, Q, Func> delta;
 		
 		for (auto& [key, value] : _base) {
 			delta.insert(std::make_pair(key, value.get_delta()));
@@ -80,7 +82,7 @@ public:
 	}
 
 private:
-	std::map<k_type, Lattice<DeltaSet<set_v_type>, Func>> _base;
+	std::map<k_type, Lattice<T, Func>> _base;
 };
 
 #endif // DELTASETMAP_H

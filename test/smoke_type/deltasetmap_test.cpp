@@ -40,7 +40,7 @@ TEST_CASE("delta test") {
 	DeltaSetMap expectedmap(expected);
 	Lattice expectedLattice(expectedmap, MapUnion{});
 
-	DeltaSetMap<std::string, int, Union>::delta_type resultLattice = leftmap.get_delta();
+	DeltaSetMap<std::string, DeltaSet<int>, Union>::delta_type resultLattice = leftmap.get_delta();
 
 	REQUIRE(resultLattice == expectedLattice);
 }

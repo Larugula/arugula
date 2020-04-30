@@ -26,7 +26,7 @@ TEST_CASE("deltasetmap with lattice mapunion test") {
 	Lattice expectedLattice(expectedmap, MapUnion{});
 
 	leftLattice.merge(rightLattice);
-	DeltaSetMap<std::string, int, Union>::delta_type resultLattice = leftLattice.get_delta();
+	DeltaSetMap<std::string, DeltaSet<int>, Union>::delta_type resultLattice = leftLattice.get_delta();
 
 	REQUIRE(resultLattice == expectedLattice);
 	//verify the content of leftLattice after get delta
