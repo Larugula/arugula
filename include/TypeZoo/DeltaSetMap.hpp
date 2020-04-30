@@ -13,6 +13,7 @@ public:
 	//type alias
 	using iterator = typename std::map<k_type, Lattice<DeltaSet<set_v_type>, Func>>::iterator;
 	using key_type = k_type;
+	using mapped_type = Lattice<DeltaSet<set_v_type>, Func>;
 	using value_type = std::pair<k_type, Lattice<DeltaSet<set_v_type>, Func>>;
 	using size_type = std::size_t;
 	using delta_type = Lattice<DeltaSetMap<k_type, set_v_type, Func>, MapUnion>;
@@ -29,6 +30,10 @@ public:
 
 	iterator end() {
 		return _base.end();
+	}
+
+	mapped_type& at(const key_type& key) {
+		return _base.at(key);
 	}
 
 	size_type size() {
@@ -65,12 +70,6 @@ public:
 
 		return Lattice(delta, MapUnion{});
 	}
-
-
-
-
-
-
 
 private:
 	std::map<k_type, Lattice<DeltaSet<set_v_type>, Func>> _base;
