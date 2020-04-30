@@ -1,5 +1,5 @@
-#ifndef DELTASETMAP_H
-#define DELTASETMAP_H
+#ifndef DELTAMAP_H
+#define DELTAMAP_H
 
 #include "DeltaSet.hpp"
 #include <map>
@@ -7,7 +7,7 @@
 #include "merges/map_mrg.hpp"
 
 template <typename k_type, class T, class Func>
-class DeltaSetMap {
+class DeltaMap {
 public:
 
 	//type alias
@@ -16,12 +16,12 @@ public:
 	using mapped_type = Lattice<T, Func>;
 	using value_type = std::pair<k_type, Lattice<T, Func>>;
 	using size_type = std::size_t;
-	using delta_type = Lattice<DeltaSetMap<k_type, T, Func>, MapUnion>;
+	using delta_type = Lattice<DeltaMap<k_type, T, Func>, MapUnion>;
 
-	DeltaSetMap() : _base(std::map<k_type, Lattice<T, Func>>{}) {};
+	DeltaMap() : _base(std::map<k_type, Lattice<T, Func>>{}) {};
 
 	//copy constructor
-	DeltaSetMap(const std::map<k_type, Lattice<T, Func>>& base) : _base(base) {};
+	DeltaMap(const std::map<k_type, Lattice<T, Func>>& base) : _base(base) {};
 
 	
 	iterator begin() {
@@ -65,14 +65,14 @@ public:
 		return _base.emplace(args...);
 	}
 
-	bool operator==(const DeltaSetMap<k_type, T, Func>& right) const {
+	bool operator==(const DeltaMap<k_type, T, Func>& right) const {
 		return _base == right._base;
 	}
 
 	template <class Q=T>
 	typename std::enable_if_t<has_delta<Q>::value, delta_type>
 	get_delta() {
-		DeltaSetMap<k_type, Q, Func> delta;
+		DeltaMap<k_type, Q, Func> delta;
 		
 		for (auto& [key, value] : _base) {
 			delta.insert(std::make_pair(key, value.get_delta()));
@@ -85,4 +85,4 @@ private:
 	std::map<k_type, Lattice<T, Func>> _base;
 };
 
-#endif // DELTASETMAP_H
+#endif // DELTAMAP_H

@@ -1,11 +1,11 @@
 #include "../catch.hpp"
 #include "lattice_core.hpp"
 #include "TypeZoo/DeltaSet.hpp"
-#include "TypeZoo/DeltaSetMap.hpp"
+#include "TypeZoo/DeltaMap.hpp"
 #include "merges/setop_mrg.hpp"
 #include <iostream>
 
-TEST_CASE("deltasetmap with lattice mapunion test") {
+TEST_CASE("DeltaMap with lattice mapunion test") {
 	DeltaSet<int> t1(std::set<int>{1, 2, 3});
 	DeltaSet<int> t3(std::set<int>{1, 20, 30});
 	DeltaSet<int> t2(std::set<int>{5, 6, 7});
@@ -18,15 +18,15 @@ TEST_CASE("deltasetmap with lattice mapunion test") {
 
 	std::map<std::string, Lattice<DeltaSet<int>, Union>> expected = { {"xx", Lattice(DeltaSet<int>(std::set<int>{20,30}), Union{})},
 																	{"yy", Lattice(DeltaSet<int>(std::set<int>{60,70}), Union{})} };
-	DeltaSetMap leftmap(left);
-	DeltaSetMap rightmap(right);
+	DeltaMap leftmap(left);
+	DeltaMap rightmap(right);
 	Lattice leftLattice(leftmap, MapUnion{});
 	Lattice rightLattice(rightmap, MapUnion{});
-	DeltaSetMap expectedmap(expected);
+	DeltaMap expectedmap(expected);
 	Lattice expectedLattice(expectedmap, MapUnion{});
 
 	leftLattice.merge(rightLattice);
-	DeltaSetMap<std::string, DeltaSet<int>, Union>::delta_type resultLattice = leftLattice.get_delta();
+	DeltaMap<std::string, DeltaSet<int>, Union>::delta_type resultLattice = leftLattice.get_delta();
 
 	REQUIRE(resultLattice == expectedLattice);
 	//verify the content of leftLattice after get delta
