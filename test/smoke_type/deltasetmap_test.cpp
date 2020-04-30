@@ -6,13 +6,19 @@
 #include <iostream>
 
 
-TEST_CASE("basic tests") {
+TEST_CASE("deltasetmap basic tests") {
 	std::map<std::string, Lattice<DeltaSet<int>, Union>> left = { {"xx", Lattice(DeltaSet<int>(std::set<int>{1,2,3}), Union{})},
 																  {"yy", Lattice(DeltaSet<int>(std::set<int>{1,20,30}), Union{})} };
 	std::map<std::string, Lattice<DeltaSet<int>, Union>> result;
 	DeltaSetMap leftmap(left);
 	DeltaSetMap resultmap(result);
 
+	//test basic functionalities
+	REQUIRE(leftmap.size() == 2);
+	REQUIRE(leftmap.count("xx") == 1);
+	REQUIRE(leftmap.at("xx") == Lattice(DeltaSet<int>(std::set<int>{1, 2, 3}), Union{}));
+
+	//test the iterator
 	for (auto& e : leftmap) {
 		resultmap.insert(e);
 	}

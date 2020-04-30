@@ -36,8 +36,16 @@ public:
 		return _base.at(key);
 	}
 
-	size_type size() {
+	const mapped_type& at(const key_type& key) const {
+		return _base.at(key);
+	}
+
+	size_type size() const {
 		return _base.size();
+	}
+
+	size_type count(const key_type& key) const {
+		return _base.count(key);
 	}
 
 	std::pair<iterator, bool> insert(const value_type& value) {
