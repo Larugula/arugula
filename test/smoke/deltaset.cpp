@@ -3,7 +3,7 @@
 #include "merges/setop_mrg.hpp"
 #include "TypeZoo/DeltaSet.hpp"
 
-TEST_CASE("union_delta") {
+TEST_CASE("delta set with lattice union_delta") {
 	std::set<int> l({ 1, 20, 30 });
 	std::set<int> r({ 1, 2, 3 });
 
