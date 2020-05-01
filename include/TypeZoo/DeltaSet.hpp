@@ -1,3 +1,5 @@
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "bugprone-reserved-identifier"
 #ifndef DELTASET_H
 #define DELTASET_H
 
@@ -9,10 +11,13 @@
 template<class _KeyType>
 class DeltaSet {
 public:
-
     DeltaSet() : _base(std::set<_KeyType>{}), _delta(std::set<_KeyType>{}) {};
+    // copy constructor
+    DeltaSet(const DeltaSet<_KeyType>& src) : _base(src._base), _delta(src._delta) {};
 
     // move constructor
+    DeltaSet(const std::set<_KeyType>&& base, const std::set<_KeyType>&& delta)
+      : _base(std::move(base)), _delta(std::move(delta)) {};
     DeltaSet(const std::set<_KeyType>&& base) : _base(std::move(base)), _delta(std::set<_KeyType>{}) {};
 
     //type alias
@@ -81,3 +86,5 @@ private:
 
 #endif // DELTASET_H
 
+
+#pragma clang diagnostic pop

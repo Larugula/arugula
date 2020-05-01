@@ -1,7 +1,11 @@
 #include "../catch.hpp"
-#include "lattice_core.hpp"
 #include "TypeZoo/DeltaSet.hpp"
 #include <iostream>
+
+TEST_CASE("Test constructors") {
+
+
+}
 
 TEST_CASE("basics int set") {
 	std::set<int> l({ 1, 20, 30 });
